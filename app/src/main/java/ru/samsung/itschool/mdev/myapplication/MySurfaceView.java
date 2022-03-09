@@ -1,12 +1,15 @@
 package ru.samsung.itschool.mdev.myapplication;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+
+    private MyThread myThread;
 
     public MySurfaceView(Context context) {
         super(context);
@@ -15,7 +18,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        MyThread myThread = new MyThread(getHolder());
+        myThread = new MyThread(getHolder());
         myThread.flag = true;
         myThread.start();
     }
@@ -28,6 +31,17 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
         // завершение
+        boolean retry = true;
+        myThread.flag = false;
+        while(retry) {
+            try {
+                myThread.join();
+                retry = false;
+                Log.d("RRR","Stopped!");
+            } catch (InterruptedException e) {
+                e.getMessage();
+            }
+        }
 
     }
 }
